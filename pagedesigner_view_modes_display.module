@@ -1,0 +1,18 @@
+<?php
+
+use Drupal\pagedesigner_view_modes_display\ElementViewBuilder;
+
+/**
+ * @file
+ * Contains hooks specific to pagedesigner_view_modes_display.
+ */
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function pagedesigner_view_modes_display_entity_type_alter(array &$entity_types) {
+  if (isset($entity_types['pagedesigner_element'])) {
+    // Override the view builder for the pagedesigner_element entity type.
+    $entity_types['pagedesigner_element']->setViewBuilderClass(ElementViewBuilder::class);
+  }
+}

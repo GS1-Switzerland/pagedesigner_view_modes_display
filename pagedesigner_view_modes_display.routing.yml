@@ -1,0 +1,10 @@
+pagedesigner_view_modes_display.view_node:
+  path: '/pagedesigner_view_modes_display/{node}/{view_mode}'
+  defaults:
+    _controller: '\Drupal\node\Controller\NodeViewController::view'
+    _title_callback: 'Drupal\node\Controller\NodeViewController::title'
+    view_mode: 'full'
+  requirements:
+    _permission: 'access content'
+    node_id: \d+
+    view_mode: '[a-z_]+'

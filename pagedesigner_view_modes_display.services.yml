@@ -1,0 +1,4 @@
+services:
+  pagedesigner_view_modes_display.renderer:
+    class: Drupal\pagedesigner_view_modes_display\Service\Renderer
+    arguments: ['@pagedesigner.service', '@messenger', '@pagedesigner.locker', '@entity_type.manager', '@renderer', '@config.factory', '@plugin.manager.ui_patterns', '@plugin.manager.editor']

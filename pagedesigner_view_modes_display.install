@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Contains pagedesigner_view_modes_display.install.
+ */
+
+/**
+ * Implements hook_update_N().
+ */
+function pagedesigner_view_modes_display_update_10002() {
+  \Drupal::service('config.installer')->installDefaultConfig('module', 'pagedesigner_view_modes_display');
+}

@@ -1,0 +1,6 @@
+pagedesigner:
+  js:
+    resources/js/init-view-modes-display.js: {minified: false}
+  css:
+    component:
+      resources/css/pagedesigner-view-modes-display.css: {minified: false}
