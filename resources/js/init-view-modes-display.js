@@ -1,5 +1,4 @@
 class PagedesignerViewModesDisplayHandler {
-
   /**
    * Construct a pagedesigner View modes display Manager.
    *
@@ -15,7 +14,6 @@ class PagedesignerViewModesDisplayHandler {
     this.component = {};
     this.view_modes = this.settings.view_modes;
   }
-
   init(component) {
     this.component = component;
     if ($('.gjs-clm-vmd').length == 0) {
@@ -23,39 +21,37 @@ class PagedesignerViewModesDisplayHandler {
       vmd_container.prepend($('<p class="sidebar-subtitle">' + Drupal.t('View Modes Display') + '</p>'));
       vmd_container.insertBefore('.gjs-clm-tags');
     }
-
     $('[data-vmd-container]').html('');
-
     self = this;
     self.formEditViewModes();
   }
-
   formEditViewModes() {
     var component = this.component;
     self = this;
-
     var hidden_view_mode_form = $('<div class="edit-vmd"></div>');
     var field_holder = $('<label></label>');
     field_holder.append('<p>' + Drupal.t('Hide element for the selected view modes') + '</p>');
-    var selec_element = $('<select multiple></select>');
+    var checkbox_container = $('<div class="vdm-checkbox-wrapper responsive-class"></div>');
     Object.keys(self.view_modes).forEach(option => {
-      var option_element = $('<option value="' + option + '">' + option + '</option>');
-      if (component.attributes.view_modes && component.attributes.view_modes.indexOf(option) != -1) {
-        option_element.attr('selected', 'selected')
+      var checkbox_element = $('<label class="inline-label"><input type="checkbox" value="' + option + '"/>' + self.view_modes[option] + '</label>');
+      if (component.get('hidden_view_modes') && component.get('hidden_view_modes').indexOf(option) != -1) {
+        checkbox_element.find('input').attr('checked', 'checked');
       }
-      selec_element.append(option_element);
+      checkbox_element.find('input').on('change', function () {
+        var selected_modes = [];
+        checkbox_container.find('input:checked').each(function () {
+          selected_modes.push($(this).val());
+        });
+        component.attributes.hidden_view_modes = selected_modes;
+        component.set('changed', true);
+      });
+      checkbox_container.append(checkbox_element);
     });
-    selec_element.on('change', function () {
-      component.attributes.hidden_view_modes = $(this).val();
-      component.set('changed', true);
-    });
-    field_holder.append(selec_element);
+    field_holder.append(checkbox_container);
     hidden_view_mode_form.append(field_holder);
     $('[data-vmd-container]').append(hidden_view_mode_form);
   }
-
 }
-
 (function ($, Drupal) {
   Drupal.behaviors.pagedesigner_init_component_view_modes_display = {
     attach: function (context, settings) {
@@ -74,13 +70,21 @@ class PagedesignerViewModesDisplayHandler {
             }
           });
         });
-
         // extend some component functions
         $(document).on('pagedesigner-init-components', function (e, editor, options) {
+
           ['component', 'row'].forEach(function (cmp_type) {
             editor.DomComponents.addType(cmp_type, {
               extend: cmp_type,
               model: {
+                initToolbar(...args) {
+                  editor.DomComponents.getType('pd_base_element').model.prototype.initToolbar.apply(this, args);
+                },
+
+                afterSave() {
+                  // Prevent endless saving loop.
+                },
+
                 serialize() {
                   var component_data = editor.DomComponents.getType('pd_base_element').model.prototype.serialize.apply(this, []);
                   if (this.attributes.hidden_view_modes) {
