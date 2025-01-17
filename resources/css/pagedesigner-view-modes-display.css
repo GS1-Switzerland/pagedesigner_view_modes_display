@@ -1,0 +1,15 @@
+.gjs-clm-vmd{
+  text-align: left;
+  padding: 0 20px;
+  margin-bottom: 30px;
+}
+
+.gjs-clm-vmd .vdm-checkbox-wrapper{
+  width: 100%;
+}
+.gjs-clm-vmd .vdm-checkbox-wrapper label{
+  margin-right: 20px;
+}
+.gjs-clm-vmd .vdm-checkbox-wrapper input{
+  margin-right: 5px;
+}
