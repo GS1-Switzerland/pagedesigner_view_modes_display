@@ -16,6 +16,7 @@ class PagedesignerViewModesDisplayHandler {
   }
   init(component) {
     this.component = component;
+
     if ($('.gjs-clm-vmd').length == 0) {
       var vmd_container = $('<div class="gjs-clm-vmd gjs-one-bg gjs-two-color" ><div data-vmd-container></div></div>');
       vmd_container.prepend($('<p class="sidebar-subtitle">' + Drupal.t('View Modes Display') + '</p>'));
@@ -82,7 +83,7 @@ class PagedesignerViewModesDisplayHandler {
                 },
 
                 afterSave() {
-                  // Prevent endless saving loop.
+                  editor.spinner.disable();
                 },
 
                 serialize() {
