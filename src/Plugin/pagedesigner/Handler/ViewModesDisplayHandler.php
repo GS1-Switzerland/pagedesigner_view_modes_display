@@ -3,35 +3,37 @@
 namespace Drupal\pagedesigner_view_modes_display\Plugin\pagedesigner\Handler;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\pagedesigner\Entity\Element;
 use Drupal\pagedesigner\Plugin\HandlerConfigTrait;
 use Drupal\pagedesigner\Plugin\HandlerPluginBase;
 use Drupal\pagedesigner\Plugin\HandlerUserTrait;
-use Drupal\pagedesigner_view_modes_display\ViewModeTrait;
+use Drupal\pagedesigner_view_modes_display\ViewModesTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Add view mode display functionality to "row" and "component" patterns.
  *
  * @PagedesignerHandler(
- *   id = "view_mode_display",
- *   name = @Translation("View mode displays handler"),
+ *   id = "view_modes_display",
+ *   name = @Translation("View modes display handler"),
  *   types = {
  *      "row",
- *      "component"
+ *      "component",
+ *      "block",
  *   },
  *   weight = 50
  * )
  */
-class ViewModeDisplayHandler extends HandlerPluginBase {
+class ViewModesDisplayHandler extends HandlerPluginBase {
 
   // Import config property and setter.
   use HandlerConfigTrait;
   // Import user property and setter.
   use HandlerUserTrait;
   use StringTranslationTrait;
-  use ViewModeTrait;
+  use ViewModesTrait;
 
   /**
    * {@inheritdoc}
@@ -44,10 +46,20 @@ class ViewModeDisplayHandler extends HandlerPluginBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function build(Element $entity, string $view_mode, array &$build = []) {
+    // Ensure pagedesigner settings are updated.
+    $cache_metadata = new CacheableMetadata();
+    $cache_metadata->setCacheTags(['config:pagedesigner_view_modes_display.settings']);
+    $cache_metadata->applyTo($build);
+  }
+
+  /**
    * {@inheritDoc}
    */
   public function collectAttachments(array &$attachments) {
-    $attachments['drupalSettings']['pagedesigner_view_modes_display']['view_modes'] = $this->getViewModeOptions();
+    $attachments['drupalSettings']['pagedesigner_view_modes_display']['view_modes'] = $this->getViewModesOptions();
     $attachments['library'][] = 'pagedesigner_view_modes_display/pagedesigner';
   }
 
@@ -82,12 +94,9 @@ class ViewModeDisplayHandler extends HandlerPluginBase {
    */
   public function view(Element $entity, string $view_mode, array &$build = []) {
     // Hide if target entity view mode is in the hidden view modes list.
-    if (!$entity->field_hidden_view_modes->isEmpty()) {
+    if ($entity->hasField('field_hidden_view_modes') && !$entity->field_hidden_view_modes->isEmpty()) {
       $hidden_view_modes = Json::decode((string) $entity->field_hidden_view_modes->value);
-      if (empty($hidden_view_modes)) {
-        return;
-      }
-      if (in_array($view_mode, $hidden_view_modes)) {
+      if (!empty($hidden_view_modes) && in_array($view_mode, $hidden_view_modes)) {
         $build['#access'] = FALSE;
       }
     }
