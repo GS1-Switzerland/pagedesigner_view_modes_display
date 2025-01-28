@@ -2,6 +2,7 @@
 
 namespace Drupal\pagedesigner_view_modes_display\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -12,6 +13,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\pagedesigner\PagedesignerService;
 use Drupal\pagedesigner\Service\RendererInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * View Modes Plugin implementation of the 'pagedesigner_formatter' formatter.
@@ -51,6 +53,12 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
    *   The current user.
    * @param \Drupal\Core\Routing\RouteMatchInterface $routeMatch
    *   The route match.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   Then entity type manager.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
+   *   The request stack.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
    */
   public function __construct(
     $plugin_id,
@@ -65,6 +73,8 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
     protected AccountInterface $currentUser,
     protected RouteMatchInterface $routeMatch,
     protected EntityTypeManagerInterface $entityTypeManager,
+    protected RequestStack $requestStack,
+    protected ConfigFactoryInterface $configFactory,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
   }
@@ -85,7 +95,9 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
       $container->get('pagedesigner_view_modes_display.renderer'),
       $container->get('current_user'),
       $container->get('current_route_match'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('request_stack'),
+      $container->get('config.factory'),
     );
   }
 
@@ -104,30 +116,52 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
     $node = $items->getEntity();
-    $view_mode = $this->viewMode;
+    $request_view_mode = $this->getRequestViewMode();
     if ($node != NULL && $node instanceof ContentEntityInterface) {
       $node = $node->getTranslation($langcode);
       foreach ($items as $item) {
         $container = $item->entity;
         if ($container != NULL && $container->hasTranslation($langcode)) {
           $container = $container->getTranslation($langcode);
-          if ($this->pagedesignerService->isPagedesignerRoute()) {
-            $this->pagedesignerRenderer->renderForEdit($container, $node);
-          }
-          elseif ($this->currentUser->hasPermission('view unpublished pagedesigner element entities')) {
-            $this->pagedesignerRenderer->render($container, $node);
-          }
-          elseif ($view_mode == 'full') {
-            $this->pagedesignerRenderer->renderForPublic($container, $node);
+          if ($request_view_mode) {
+            $this->pagedesignerRenderer->renderForViewMode($container, $node, $request_view_mode);
           }
           else {
-            $this->pagedesignerRenderer->renderForViewMode($container, $node, $view_mode);
+            if ($this->pagedesignerService->isPagedesignerRoute()) {
+              $this->pagedesignerRenderer->renderForEdit($container, $node);
+            }
+            elseif ($this->currentUser->hasPermission('view unpublished pagedesigner element entities')) {
+              $this->pagedesignerRenderer->render($container, $node);
+            }
+            elseif ($this->viewMode == 'full') {
+              $this->pagedesignerRenderer->renderForPublic($container, $node);
+            }
+            else {
+              $this->pagedesignerRenderer->renderForViewMode($container, $node, $this->viewMode);
+            }
           }
           $elements[] = $this->pagedesignerRenderer->getOutput();
         }
       }
     }
     return $elements;
+  }
+
+  /**
+   * Get the view mode from request.
+   *
+   * @return string
+   *   The view mode.
+   */
+  protected function getRequestViewMode() {
+    $config = $this->configFactory->get('pagedesigner_view_modes_display.settings');
+    if (!$config->get('use_url_query_parameter')) {
+      return NULL;
+    }
+    // Get request query parameter if it exists.
+    $parameter = $config->get('url_query_parameter') ?? 'viewmode';
+    $request = $this->requestStack->getCurrentRequest();
+    return $request->query->get($parameter);
   }
 
 }
