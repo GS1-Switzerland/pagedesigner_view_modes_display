@@ -33,21 +33,27 @@ class PagedesignerViewModesDisplayHandler {
     var field_holder = $('<label></label>');
     field_holder.append('<p>' + Drupal.t('Hide element for the selected view modes') + '</p>');
     var checkbox_container = $('<div class="vdm-checkbox-wrapper responsive-class"></div>');
-    Object.keys(self.view_modes).forEach(option => {
-      var checkbox_element = $('<label class="inline-label"><input type="checkbox" value="' + option + '"/>' + self.view_modes[option] + '</label>');
-      if (component.get('hidden_view_modes') && component.get('hidden_view_modes').indexOf(option) != -1) {
-        checkbox_element.find('input').attr('checked', 'checked');
-      }
-      checkbox_element.find('input').on('change', function () {
-        var selected_modes = [];
-        checkbox_container.find('input:checked').each(function () {
-          selected_modes.push($(this).val());
+    if (Object.keys(self.view_modes).length > 0) {
+      Object.keys(self.view_modes).forEach(option => {
+        var checkbox_element = $('<label class="inline-label"><input type="checkbox" value="' + option + '"/>' + self.view_modes[option] + '</label>');
+        if (component.get('hidden_view_modes') && component.get('hidden_view_modes').indexOf(option) != -1) {
+          checkbox_element.find('input').attr('checked', 'checked');
+        }
+        checkbox_element.find('input').on('change', function () {
+          var selected_modes = [];
+          checkbox_container.find('input:checked').each(function () {
+            selected_modes.push($(this).val());
+          });
+          component.attributes.hidden_view_modes = selected_modes;
+          component.set('changed', true);
         });
-        component.attributes.hidden_view_modes = selected_modes;
-        component.set('changed', true);
+        checkbox_container.append(checkbox_element);
       });
-      checkbox_container.append(checkbox_element);
-    });
+    }
+    else {
+      checkbox_container.append('<p>' + Drupal.t('No view modes available') + '</p>');
+      checkbox_container.append('<a href="/admin/config/pagedesigner-view-modes-display/settings" target="_blank">' + Drupal.t('Add view modes') + '</a>');
+    }
     field_holder.append(checkbox_container);
     hidden_view_mode_form.append(field_holder);
     $('[data-vmd-container]').append(hidden_view_mode_form);
@@ -74,7 +80,7 @@ class PagedesignerViewModesDisplayHandler {
         // extend some component functions
         $(document).on('pagedesigner-init-components', function (e, editor, options) {
 
-          ['component', 'row'].forEach(function (cmp_type) {
+          ['component', 'row', 'block'].forEach(function (cmp_type) {
             editor.DomComponents.addType(cmp_type, {
               extend: cmp_type,
               model: {
