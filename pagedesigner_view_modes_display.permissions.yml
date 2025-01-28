@@ -1,0 +1,4 @@
+administer pagedesigner view modes display settings:
+  title: 'Administer Pagedesigner View Modes Display settings'
+  description: 'Users with this permission will be able to administer Pagedesigner View Modes Display settings'
+  restrict access: TRUE

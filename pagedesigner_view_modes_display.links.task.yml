@@ -1,0 +1,4 @@
+pagedesigner_view_modes_display.settings:
+  title: 'Pagedesigner View Modes Display settings'
+  route_name: pagedesigner_view_modes_display.settings
+  base_route: pagedesigner.admin

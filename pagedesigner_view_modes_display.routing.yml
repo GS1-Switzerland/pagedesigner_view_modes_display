@@ -1,3 +1,10 @@
+pagedesigner_view_modes_display.settings:
+  path: "/admin/config/pagedesigner-view-modes-display/settings"
+  defaults:
+    _title: "Pagedesigner View Modes Display Settings"
+    _form: '\Drupal\pagedesigner_view_modes_display\Form\PagedesignerViewModesDisplaySettingsForm'
+  requirements:
+    _permission: "administer pagedesigner view modes display settings"
 pagedesigner_view_modes_display.view_node:
   path: '/pagedesigner_view_modes_display/{node}/{view_mode}'
   defaults:

@@ -1,0 +1,6 @@
+pagedesigner_view_modes_display.settings:
+  title: 'Pagedesigner View Modes Display'
+  route_name: pagedesigner_view_modes_display.settings
+  description: 'Configure Pagedesigner View Modes Display settings.'
+  parent: pagedesigner.admin
+  weight: 300
