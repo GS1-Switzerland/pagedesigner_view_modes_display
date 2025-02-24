@@ -12,6 +12,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\pagedesigner\PagedesignerService;
 use Drupal\pagedesigner\Service\RendererInterface;
+use Drupal\pagedesigner_view_modes_display\ViewModesTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -27,6 +28,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * )
  */
 class ViewModesPagedesignerFormatter extends FormatterBase {
+
+  use ViewModesTrait;
 
   /**
    * Constructs a StringFormatter instance.
@@ -133,11 +136,11 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
             elseif ($this->currentUser->hasPermission('view unpublished pagedesigner element entities')) {
               $this->pagedesignerRenderer->render($container, $node);
             }
-            elseif ($this->viewMode == 'full') {
-              $this->pagedesignerRenderer->renderForPublic($container, $node);
+            elseif ($this->isPagedesignerViewMode()) {
+              $this->pagedesignerRenderer->renderForViewMode($container, $node, $this->viewMode);
             }
             else {
-              $this->pagedesignerRenderer->renderForViewMode($container, $node, $this->viewMode);
+              $this->pagedesignerRenderer->renderForPublic($container, $node);
             }
           }
           $elements[] = $this->pagedesignerRenderer->getOutput();
@@ -162,6 +165,16 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
     $parameter = $config->get('url_query_parameter') ?? 'viewmode';
     $request = $this->requestStack->getCurrentRequest();
     return $request->query->get($parameter);
+  }
+
+  /**
+   * Check if the view mode is configured to be hidden.
+   *
+   * @return bool
+   *   Whether the view mode is hidden.
+   */
+  protected function isPagedesignerViewMode() {
+    return in_array($this->viewMode, $this->getViewModesOptions());
   }
 
 }
