@@ -79,46 +79,47 @@ class PagedesignerViewModesDisplayHandler {
         });
         // extend some component functions
         $(document).on('pagedesigner-init-components', function (e, editor, options) {
-
-          ['component', 'row', 'block'].forEach(function (cmp_type) {
-            editor.DomComponents.addType(cmp_type, {
-              extend: cmp_type,
-              model: {
-                initToolbar(...args) {
-                  editor.DomComponents.getType('pd_base_element').model.prototype.initToolbar.apply(this, args);
-                },
-
-                afterSave() {
-                  editor.spinner.disable();
-                },
-
-                serialize() {
-                  var component_data = editor.DomComponents.getType('pd_base_element').model.prototype.serialize.apply(this, []);
-                  if (this.attributes.hidden_view_modes) {
-                    component_data.hidden_view_modes = [...this.attributes.hidden_view_modes];
-                  }
-                  return component_data;
-                },
-
-                handleLoadResponse(response) {
-                  editor.DomComponents.getType('pd_base_element').model.prototype.handleLoadResponse.apply(this, [response]);
-                  if (response['hidden_view_modes']) {
-                    this.attributes.hidden_view_modes = response['hidden_view_modes'];
-                    this.attributes.previousVersion.hidden_view_modes = response['hidden_view_modes'];
-                  }
-                },
-
-                restore() {
-                  editor.DomComponents.getType('pd_base_element').model.prototype.restore.apply(this, []);
-                  if (this.get('previousVersion').hidden_view_modes) {
-                    this.attributes.hidden_view_modes = this.get('previousVersion').hidden_view_modes;
-                  }
-                },
-              }
-            });
-          });
+          init(editor);
         });
       });
     }
   };
+
+  function init(editor) {
+    ['component', 'row', 'block'].forEach(function (cmp_type) {
+      editor.DomComponents.addType(cmp_type, {
+        extend: cmp_type,
+        model: {
+
+          afterSave() {
+            editor.spinner.disable();
+          },
+
+          serialize() {
+            var component_data = editor.DomComponents.getType(cmp_type).model.__super__.serialize.apply(this, []);
+            if (this.attributes.hidden_view_modes) {
+              component_data.hidden_view_modes = [...this.attributes.hidden_view_modes];
+            }
+            return component_data;
+          },
+
+          handleLoadResponse(response) {
+            editor.DomComponents.getType(cmp_type).model.__super__.handleLoadResponse.apply(this, [response]);
+            if (response['hidden_view_modes']) {
+              this.attributes.hidden_view_modes = response['hidden_view_modes'];
+              this.attributes.previousVersion.hidden_view_modes = response['hidden_view_modes'];
+            }
+          },
+
+          restore() {
+            editor.DomComponents.getType(cmp_type).model.__super__.restore.apply(this, []);
+            if (this.get('previousVersion').hidden_view_modes) {
+              this.attributes.hidden_view_modes = this.get('previousVersion').hidden_view_modes;
+            }
+          },
+        }
+      });
+    });
+  }
+
 })(jQuery, Drupal);
