@@ -4,3 +4,8 @@ pagedesigner:
   css:
     component:
       resources/css/pagedesigner-view-modes-display.css: {minified: false}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - pagedesigner/pagedesigner
