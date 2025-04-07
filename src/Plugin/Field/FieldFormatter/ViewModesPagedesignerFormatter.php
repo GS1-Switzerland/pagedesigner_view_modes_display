@@ -121,11 +121,15 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
     $node = $items->getEntity();
     $request_view_mode = $this->getRequestViewMode();
     if ($node != NULL && $node instanceof ContentEntityInterface) {
-      $node = $node->getTranslation($langcode);
+      if ($node->hasTranslation($langcode)){
+        $node = $node->getTranslation($langcode);
+      }
       foreach ($items as $item) {
         $container = $item->entity;
-        if ($container != NULL && $container->hasTranslation($langcode)) {
-          $container = $container->getTranslation($langcode);
+        if ($container != NULL) {
+          if ($container->hasTranslation($langcode)) {
+            $container = $container->getTranslation($langcode);
+          }
           if ($request_view_mode) {
             $this->pagedesignerRenderer->renderForViewMode($container, $node, $request_view_mode);
           }
