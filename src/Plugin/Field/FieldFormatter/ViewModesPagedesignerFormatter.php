@@ -130,7 +130,7 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
           if ($container->hasTranslation($langcode)) {
             $container = $container->getTranslation($langcode);
           }
-          if ($request_view_mode) {
+          if ($request_view_mode && !$this->currentUser->hasPermission('view unpublished pagedesigner element entities')) {
             $this->pagedesignerRenderer->renderForViewMode($container, $node, $request_view_mode);
           }
           else {
@@ -150,6 +150,13 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
           $elements[] = $this->pagedesignerRenderer->getOutput();
         }
       }
+    }
+    $config = $this->configFactory->get('pagedesigner_view_modes_display.settings');
+    if ($config->get('use_url_query_parameter')) {
+      // Get request query parameter if it exists.
+      $parameter = $config->get('url_query_parameter') ?? 'viewmode';
+      // Add cache context for the query parameter.
+      $elements['#cache']['contexts'][] = 'url.query_args:' . $parameter;
     }
     return $elements;
   }
