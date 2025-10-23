@@ -1,0 +1,17 @@
+{
+  "name": "drupal/pagedesigner_view_modes_display",
+  "type": "drupal-module",
+  "description": "Allows to define display option of pagedesigner elements depending on the view mode of the parent entity.",
+  "keywords": ["Drupal", "pagedesigner", "view modes", "display"],
+  "homepage": "https://www.drupal.org/project/pagedesigner_view_modes_display",
+  "license": "GPL-2.0-or-later",
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=8.1",
+    "drupal/core": "^9.5 || ^10",
+    "drupal/pagedesigner": "*"
+  },
+  "require-dev": {
+    "drupal/core-dev": "^9.5 || ^10"
+  }
+}

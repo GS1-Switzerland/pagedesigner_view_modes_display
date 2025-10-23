@@ -27,17 +27,6 @@ class ElementViewBuilder extends PagedesignerElementViewBuilder {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  protected function isViewModeCacheable($view_mode) {
-    // Not cacheable if the view mode is a pagedesigner view modes display.
-    if (in_array($view_mode, $this->getViewModesOptions())) {
-      return FALSE;
-    }
-    return parent::isViewModeCacheable($view_mode);
-  }
-
-  /**
    * Adds the default lazy builder for an element.
    *
    * @param \Drupal\pagedesigner\Entity\Element $entity
