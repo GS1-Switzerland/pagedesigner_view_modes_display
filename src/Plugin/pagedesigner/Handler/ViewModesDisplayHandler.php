@@ -50,20 +50,20 @@ class ViewModesDisplayHandler extends HandlerPluginBase {
    */
   public function build(Element $entity, string $view_mode, array &$build = []) {
     $cache_metadata = new CacheableMetadata();
-    
-    // Add cache tags for configuration changes
+
+    // Add cache tags for configuration changes.
     $cache_metadata->setCacheTags(['config:pagedesigner_view_modes_display.settings']);
-    
-    // Add cache context for URL query parameter if enabled
+
+    // Add cache context for URL query parameter if enabled.
     $config = $this->configFactory->get('pagedesigner_view_modes_display.settings');
     if ($config->get('use_url_query_parameter')) {
       $parameter = $config->get('url_query_parameter') ?? 'viewmode';
       $cache_metadata->setCacheContexts(['url.query_args:' . $parameter]);
     }
-    
-    // Add entity cache tags so cache invalidates when element is updated
+
+    // Add entity cache tags so cache invalidates when element is updated.
     $cache_metadata->addCacheableDependency($entity);
-    
+
     $cache_metadata->applyTo($build);
   }
 

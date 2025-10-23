@@ -1,11 +1,11 @@
 <?php
 
-use Drupal\pagedesigner_view_modes_display\ElementViewBuilder;
-
 /**
  * @file
  * Contains hooks specific to pagedesigner_view_modes_display.
  */
+
+use Drupal\pagedesigner_view_modes_display\ElementViewBuilder;
 
 /**
  * Implements hook_entity_type_alter().

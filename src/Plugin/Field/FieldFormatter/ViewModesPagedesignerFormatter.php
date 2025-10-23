@@ -121,7 +121,7 @@ class ViewModesPagedesignerFormatter extends FormatterBase {
     $node = $items->getEntity();
     $request_view_mode = $this->getRequestViewMode();
     if ($node != NULL && $node instanceof ContentEntityInterface) {
-      if ($node->hasTranslation($langcode)){
+      if ($node->hasTranslation($langcode)) {
         $node = $node->getTranslation($langcode);
       }
       foreach ($items as $item) {

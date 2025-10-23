@@ -47,7 +47,12 @@ class ElementViewBuilder extends PagedesignerElementViewBuilder {
       '#weight' => $build['#weight'] ?? 0,
     ];
     // Add the lazy builder to the render array.
-    $build['#lazy_builder'] = ['\Drupal\pagedesigner_view_modes_display\ElementViewBuilder::lazyBuilder', [Json::encode($arguments)]];
+    $build['#lazy_builder'] = [
+      '\Drupal\pagedesigner_view_modes_display\ElementViewBuilder::lazyBuilder',
+      [
+        Json::encode($arguments),
+      ],
+    ];
   }
 
   /**

@@ -2,13 +2,8 @@
 
 namespace Drupal\pagedesigner_view_modes_display\Form;
 
-use Drupal\Core\Config\Config;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * The settings form for pagedesigner_view_modes_display.

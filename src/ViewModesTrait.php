@@ -28,7 +28,7 @@ trait ViewModesTrait {
 
     $config = \Drupal::config('pagedesigner_view_modes_display.settings');
     $view_modes_string = $config->get('view_modes');
-    
+
     if (empty($view_modes_string)) {
       $this->viewModesOptionsCache = [];
       return $this->viewModesOptionsCache;

@@ -2,7 +2,7 @@ name: 'Pagedesigner view modes display'
 type: module
 description: 'Allows to define display option of pagedesginer elements depending on the view mode of the parent entity.'
 package: 'Pagedesigner'
-core_version_requirement: ^9.5 || ^10
+core_version_requirement: ^10 || ^11
 
 dependencies:
   - pagedesigner:pagedesigner

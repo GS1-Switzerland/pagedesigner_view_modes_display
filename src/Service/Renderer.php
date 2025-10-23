@@ -24,7 +24,7 @@ class Renderer extends PagedesignerRenderer {
    * @return \Drupal\pagedesigner\Service\Renderer
    *   The renderer service.
    */
-  public function renderForViewMode(Element $container, ContentEntityBase $entity = NULL, $view_mode) {
+  public function renderForViewMode(Element $container, ?ContentEntityBase $entity = NULL, $view_mode) {
 
     if ($container == NULL) {
       return $this;
